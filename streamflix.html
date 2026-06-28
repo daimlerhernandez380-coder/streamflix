@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StreamFlix — by Daimler Hernandez</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --card: #1a1a26;
+    --border: #2a2a3a;
+    --accent: #e50914;
+    --accent2: #ff6b35;
+    --gold: #f5c518;
+    --text: #f0f0f5;
+    --muted: #8888aa;
+    --radius: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.98), transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+
+  .btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #c1070f; }
+  .btn-gold { background: var(--gold); color: #000; }
+  .btn-gold:hover { background: #d4a80e; }
+
+  /* ─── HERO ─── */
+  #hero {
+    padding-top: 64px;
+    min-height: 520px;
+    display: flex; align-items: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0a0a0f 0%, #1a0a14 50%, #0a0a0f 100%);
+  }
+
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 60% 50%, rgba(229,9,20,0.12) 0%, transparent 70%);
+  }
+
+  .hero-content { position: relative; padding: 60px 40px; max-width: 680px; }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(229,9,20,0.15);
+    border: 1px solid rgba(229,9,20,0.3);
+    color: var(--accent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    line-height: 1;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .hero-title span { color: var(--accent); }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .hero-credit {
+    font-size: 0.72rem;
+    color: var(--muted);
+    opacity: 0.5;
+  }
+  .hero-credit strong { color: var(--gold); opacity: 1; }
+
+  /* ─── SEARCH ─── */
+  .search-bar {
+    display: flex; gap: 10px; margin-bottom: 20px;
+    max-width: 500px;
+  }
+  .search-bar input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 16px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar input::placeholder { color: var(--muted); }
+
+  /* ─── FILTERS ─── */
+  .filters {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    padding: 20px 40px 10px;
+  }
+  .filter-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .filter-btn:hover, .filter-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(229,9,20,0.08);
+  }
+
+  /* ─── GRID ─── */
+  .section { padding: 24px 40px 40px; }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+
+  /* ─── CARD ─── */
+  .movie-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.25s, box-shadow 0.25s;
+    border: 1px solid var(--border);
+    position: relative;
+  }
+  .movie-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(229,9,20,0.25);
+    border-color: rgba(229,9,20,0.4);
+    z-index: 2;
+  }
+  .card-thumb {
+    width: 100%; aspect-ratio: 2/3;
+    background: var(--surface);
+    position: relative; overflow: hidden;
+  }
+  .card-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  .card-thumb-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+  }
+  .card-thumb-placeholder .movie-icon { font-size: 3rem; }
+  .card-thumb-placeholder .movie-letter {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: rgba(255,255,255,0.15);
+  }
+  .card-play-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .movie-card:hover .card-play-overlay { opacity: 1; }
+  .play-btn-big {
+    width: 56px; height: 56px;
+    background: rgba(229,9,20,0.9);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    color: #fff;
+  }
+  .card-badge {
+    position: absolute; top: 8px; left: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+  }
+  .card-info { padding: 12px; }
+  .card-title {
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-meta {
+    display: flex; gap: 8px; align-items: center;
+    font-size: 0.72rem; color: var(--muted);
+  }
+  .card-year { }
+  .card-genre {
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .card-type-badge {
+    padding: 2px 6px; border-radius: 4px;
+    font-size: 0.65rem; font-weight: 700;
+  }
+  .type-file { background: rgba(245,197,24,0.15); color: var(--gold); }
+  .type-github { background: rgba(88,166,255,0.15); color: #58a6ff; }
+  .type-url { background: rgba(63,185,80,0.15); color: #3fb950; }
+
+  /* ─── MODAL PLAYER ─── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.95);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .player-modal {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    width: 100%; max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-close {
+    position: absolute; top: 16px; right: 16px; z-index: 10;
+    background: rgba(0,0,0,0.6);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer; font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: var(--accent); border-color: var(--accent); }
+
+  .video-container {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    position: relative;
+  }
+  .video-container video,
+  .video-container iframe {
+    width: 100%; height: 100%;
+    border: none; display: block;
+  }
+  .video-no-source {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; gap: 12px;
+    color: var(--muted);
+  }
+  .video-no-source .big-icon { font-size: 4rem; }
+
+  .modal-info { padding: 24px; }
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .modal-meta { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+  .modal-meta span { font-size: 0.78rem; color: var(--muted); }
+  .modal-desc {
+    font-size: 0.88rem; line-height: 1.6; color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 16px; margin-top: 8px;
+  }
+
+  /* ─── ADMIN PANEL ─── */
+  .admin-overlay {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.85);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .admin-overlay.open { display: flex; }
+
+  .admin-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    width: 100%; max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+
+  .admin-header {
+    padding: 24px 28px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .admin-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem; letter-spacing: 1px;
+    display: flex; gap: 10px; align-items: center;
+  }
+  .admin-close {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); width: 34px; height: 34px;
+    border-radius: 50%; cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .admin-close:hover { border-color: var(--accent); color: var(--accent); }
+
+  .admin-body { padding: 24px 28px; }
+
+  .form-group { margin-bottom: 18px; }
+  .form-label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    color: var(--muted); letter-spacing: 0.5px;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .form-input, .form-select, .form-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--accent);
+  }
+  .form-select option { background: var(--card); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-input::placeholder { color: var(--muted); }
+
+  .source-tabs {
+    display: flex; border-radius: 8px; overflow: hidden;
+    border: 1.5px solid var(--border);
+    margin-bottom: 18px;
+  }
+  .source-tab {
+    flex: 1; padding: 9px;
+    background: transparent; border: none;
+    color: var(--muted); font-family: 'Inter', sans-serif;
+    font-size: 0.8rem; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; letter-spacing: 0.3px;
+  }
+  .source-tab.active { background: var(--accent); color: #fff; }
+  .source-tab:not(:last-child) { border-right: 1.5px solid var(--border); }
+
+  .source-panel { display: none; }
+  .source-panel.active { display: block; }
+
+  .file-upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .file-upload-zone:hover, .file-upload-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(229,9,20,0.05);
+  }
+  .file-upload-zone .upload-icon { font-size: 2rem; margin-bottom: 8px; }
+  .file-upload-zone p { color: var(--muted); font-size: 0.82rem; }
+  .file-upload-zone strong { color: var(--accent); }
+  #fileInput { display: none; }
+
+  .movie-list-admin { margin-top: 24px; }
+  .movie-list-admin h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem; letter-spacing: 1px;
+    margin-bottom: 12px; color: var(--muted);
+  }
+  .movie-item-admin {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: border-color 0.2s;
+  }
+  .movie-item-admin:hover { border-color: var(--border); }
+  .movie-thumb-sm {
+    width: 48px; height: 68px;
+    background: var(--surface);
+    border-radius: 6px;
+    overflow: hidden; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+  }
+  .movie-thumb-sm img { width: 100%; height: 100%; object-fit: cover; }
+  .movie-item-info { flex: 1; min-width: 0; }
+  .movie-item-title { font-weight: 700; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .movie-item-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+  .movie-item-del {
+    background: rgba(229,9,20,0.1);
+    border: 1px solid rgba(229,9,20,0.2);
+    color: var(--accent); padding: 6px 12px;
+    border-radius: 6px; cursor: pointer; font-size: 0.78rem;
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .movie-item-del:hover { background: var(--accent); color: #fff; }
+
+  /* ─── LOGIN ─── */
+  .login-overlay {
+    display: none; position: fixed; inset: 0; z-index: 250;
+    background: rgba(0,0,0,0.9);
+    align-items: center; justify-content: center;
+  }
+  .login-overlay.open { display: flex; }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 40px;
+    width: 340px;
+    animation: slideUp 0.3s ease;
+    text-align: center;
+  }
+  .login-box .logo { display: block; font-size: 2rem; margin-bottom: 6px; }
+  .login-box h3 { color: var(--muted); font-size: 0.85rem; margin-bottom: 28px; font-weight: 400; }
+  .login-err {
+    font-size: 0.78rem; color: var(--accent);
+    margin-bottom: 12px; display: none;
+  }
+  .login-cancel {
+    margin-top: 12px; background: none; border: none;
+    color: var(--muted); cursor: pointer; font-size: 0.8rem;
+    text-decoration: underline; font-family: 'Inter', sans-serif;
+  }
+
+  /* ─── EMPTY STATE ─── */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+  }
+  .empty-state .big { font-size: 4rem; margin-bottom: 12px; }
+  .empty-state h3 { font-size: 1.1rem; margin-bottom: 6px; color: var(--text); }
+  .empty-state p { font-size: 0.85rem; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed; bottom: 30px; right: 30px; z-index: 400;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    display: flex; gap: 10px; align-items: center;
+    font-size: 0.85rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    transform: translateY(20px); opacity: 0;
+    transition: all 0.3s;
+    max-width: 320px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { border-left: 3px solid #3fb950; }
+  .toast.error { border-left: 3px solid var(--accent); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.78rem;
+  }
+  footer strong { color: var(--gold); }
+
+  /* ─── SCROLLBAR ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    nav { padding: 0 16px; }
+    .hero-content { padding: 40px 16px; }
+    .section, .filters { padding-left: 16px; padding-right: 16px; }
+    .movies-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .admin-body, .admin-header { padding-left: 16px; padding-right: 16px; }
+  }
+
+  .stats-bar {
+    display: flex; gap: 24px; flex-wrap: wrap;
+    padding: 12px 40px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,0.01);
+  }
+  .stat { font-size: 0.78rem; color: var(--muted); }
+  .stat strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">StreamFlix</div>
+  <div class="nav-right">
+    <button class="btn btn-outline" onclick="openAdmin()">🔐 Admin</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🎬 Tu plataforma de streaming</div>
+    <h1 class="hero-title">MIRA LO QUE<br><span>QUIERAS,</span><br>CUANDO QUIERAS</h1>
+    <p class="hero-sub">Películas subidas directamente por el administrador. Sin cuentas, sin restricciones. Solo dale play.</p>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Buscar película..." oninput="filterMovies()">
+      <button class="btn btn-primary" onclick="filterMovies()">Buscar</button>
+    </div>
+    <p class="hero-credit">Creado por <strong>Daimler Hernandez</strong></p>
+  </div>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat">🎞️ <strong id="totalMovies">0</strong> películas</div>
+  <div class="stat">👁️ <strong>Acceso libre</strong> — no necesitas cuenta</div>
+  <div class="stat">📱 <strong>Funciona</strong> en todos los dispositivos</div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters" id="filters">
+  <button class="filter-btn active" onclick="setFilter('Todos', this)">Todos</button>
+  <button class="filter-btn" onclick="setFilter('Acción', this)">Acción</button>
+  <button class="filter-btn" onclick="setFilter('Comedia', this)">Comedia</button>
+  <button class="filter-btn" onclick="setFilter('Drama', this)">Drama</button>
+  <button class="filter-btn" onclick="setFilter('Terror', this)">Terror</button>
+  <button class="filter-btn" onclick="setFilter('Animación', this)">Animación</button>
+  <button class="filter-btn" onclick="setFilter('Ciencia Ficción', this)">Sci-Fi</button>
+  <button class="filter-btn" onclick="setFilter('Romance', this)">Romance</button>
+  <button class="filter-btn" onclick="setFilter('Thriller', this)">Thriller</button>
+  <button class="filter-btn" onclick="setFilter('Documental', this)">Documental</button>
+  <button class="filter-btn" onclick="setFilter('Aventura', this)">Aventura</button>
+  <button class="filter-btn" onclick="setFilter('Otro', this)">Otro</button>
+</div>
+
+<!-- MOVIES SECTION -->
+<div class="section">
+  <div class="section-title">🎬 Películas Disponibles</div>
+  <div class="movies-grid" id="moviesGrid">
+    <div class="empty-state">
+      <div class="big">🎬</div>
+      <h3>Aún no hay películas</h3>
+      <p>El administrador todavía no ha subido contenido.<br>¡Vuelve pronto!</p>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo" style="font-size:1.4rem; margin-bottom:8px;">StreamFlix</div>
+  Plataforma de streaming • Creada por <strong>Daimler Hernandez</strong><br>
+  <span style="opacity:0.4; margin-top:4px; display:block;">Todo el contenido es propiedad de sus respectivos dueños.</span>
+</footer>
+
+<!-- ═══════════ LOGIN MODAL ═══════════ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <span class="logo">StreamFlix</span>
+    <h3>Zona de Administrador</h3>
+    <p class="login-err" id="loginErr">❌ Contraseña incorrecta</p>
+    <div class="form-group">
+      <input class="form-input" type="password" id="pwInput" placeholder="Contraseña admin"
+             onkeydown="if(event.key==='Enter') checkPw()">
+    </div>
+    <button class="btn btn-primary" style="width:100%" onclick="checkPw()">Entrar</button>
+    <br>
+    <button class="login-cancel" onclick="closeLogin()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ═══════════ ADMIN PANEL ═══════════ -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <h2>⚙️ Panel Admin</h2>
+      <button class="admin-close" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-body">
+
+      <!-- ADD FORM -->
+      <div style="margin-bottom: 28px;">
+        <h3 style="font-family:'Bebas Neue'; font-size:1.2rem; letter-spacing:1px; margin-bottom:16px; color:var(--accent);">➕ Agregar Película</h3>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Título *</label>
+            <input class="form-input" id="movieTitle" placeholder="Nombre de la película">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Año</label>
+            <input class="form-input" id="movieYear" placeholder="2024" type="number">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Género</label>
+            <select class="form-select" id="movieGenre">
+              <option value="Acción">Acción</option>
+              <option value="Comedia">Comedia</option>
+              <option value="Drama">Drama</option>
+              <option value="Terror">Terror</option>
+              <option value="Animación">Animación</option>
+              <option value="Ciencia Ficción">Ciencia Ficción</option>
+              <option value="Romance">Romance</option>
+              <option value="Thriller">Thriller</option>
+              <option value="Documental">Documental</option>
+              <option value="Aventura">Aventura</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-textarea" id="movieDesc" placeholder="Breve descripción de la película..."></textarea>
+          </div>
+          <div class="form-group" style="grid-column:1/-1">
+            <label class="form-label">Portada (URL de imagen)</label>
+            <input class="form-input" id="moviePoster" placeholder="https://imagen.com/portada.jpg (opcional)">
+          </div>
+        </div>
+
+        <!-- SOURCE TABS -->
+        <div class="form-label" style="margin-bottom:8px;">Fuente del video *</div>
+        <div class="source-tabs">
+          <button class="source-tab active" onclick="switchSource('file', this)">📂 Mis Archivos</button>
+          <button class="source-tab" onclick="switchSource('github', this)">🐙 GitHub Raw</button>
+          <button class="source-tab" onclick="switchSource('url', this)">🔗 URL Directa</button>
+        </div>
+
+        <!-- FILE SOURCE -->
+        <div class="source-panel active" id="src-file">
+          <div class="file-upload-zone" onclick="document.getElementById('fileInput').click()"
+               ondragover="event.preventDefault();this.classList.add('dragover')"
+               ondragleave="this.classList.remove('dragover')"
+               ondrop="handleDrop(event)">
+            <div class="upload-icon">📂</div>
+            <p><strong>Haz clic</strong> para seleccionar un video o arrástralo aquí</p>
+            <p style="margin-top:6px; opacity:0.5; font-size:0.72rem">MP4, MKV, AVI, MOV, WebM</p>
+          </div>
+          <input type="file" id="fileInput" accept="video/*" onchange="handleFileSelect(event)">
+          <div id="fileInfo" style="margin-top:10px; font-size:0.8rem; color:var(--muted)"></div>
+          <div style="margin-top:12px; padding:12px; background:rgba(245,197,24,0.07); border:1px solid rgba(245,197,24,0.2); border-radius:8px;">
+            <p style="font-size:0.75rem; color:var(--gold);">⚠️ <strong>Nota importante:</strong> Los archivos locales solo funcionan en tu navegador. Para que todos los visitantes puedan ver la película, súbela a un servidor o usa la opción GitHub Raw / URL.</p>
+          </div>
+        </div>
+
+        <!-- GITHUB SOURCE -->
+        <div class="source-panel" id="src-github">
+          <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">Sube tu video a un repositorio de GitHub y pega el enlace Raw:</p>
+          <input class="form-input" id="githubUrl" placeholder="https://raw.githubusercontent.com/usuario/repo/main/pelicula.mp4">
+          <div style="margin-top:12px; padding:12px; background:rgba(88,166,255,0.07); border:1px solid rgba(88,166,255,0.2); border-radius:8px;">
+            <p style="font-size:0.75rem; color:#58a6ff;">🐙 <strong>Cómo hacerlo:</strong><br>
+            1. Sube tu video a GitHub (repositorio público)<br>
+            2. Abre el archivo → clic en "Raw"<br>
+            3. Copia esa URL y pégala aquí</p>
+          </div>
+        </div>
+
+        <!-- URL SOURCE -->
+        <div class="source-panel" id="src-url">
+          <p style="font-size:0.78rem; color:var(--muted); margin-bottom:10px;">URL directa a un archivo de video (.mp4, .webm):</p>
+          <input class="form-input" id="directUrl" placeholder="https://servidor.com/pelicula.mp4">
+          <div style="margin-top:12px; padding:12px; background:rgba(63,185,80,0.07); border:1px solid rgba(63,185,80,0.2); border-radius:8px;">
+            <p style="font-size:0.75rem; color:#3fb950;">🔗 <strong>Tip:</strong> Puedes usar servicios como Archive.org, Dropbox (link directo), o tu propio servidor de hosting.</p>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:12px;" onclick="addMovie()">
+          ➕ Publicar Película
+        </button>
+      </div>
+
+      <!-- MOVIE LIST -->
+      <div class="movie-list-admin">
+        <h3 id="adminListTitle">🎬 Películas Publicadas (0)</h3>
+        <div id="adminMovieList">
+          <p style="color:var(--muted); font-size:0.82rem; text-align:center; padding:20px;">Aún no hay películas publicadas.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PLAYER MODAL ═══════════ -->
+<div class="modal-overlay" id="playerOverlay">
+  <div class="player-modal">
+    <button class="modal-close" onclick="closePlayer()">✕</button>
+    <div class="video-container" id="videoContainer"></div>
+    <div class="modal-info">
+      <h2 class="modal-title" id="playerTitle"></h2>
+      <div class="modal-meta" id="playerMeta"></div>
+      <div class="modal-desc" id="playerDesc"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon"></span>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// ═══════════ STATE ═══════════
+const ADMIN_PW = 'Hisd2703';
+const STORAGE_KEY = 'streamflix_movies_v2';
+
+let movies = [];
+let currentFilter = 'Todos';
+let activeSource = 'file';
+let pendingFileData = null;
+let pendingFileName = '';
+
+// ═══════════ INIT ═══════════
+function init() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try { movies = JSON.parse(stored); } catch(e) { movies = []; }
+  }
+  renderMovies();
+  updateStats();
+}
+
+function saveMovies() {
+  // Save metadata only (not file blobs which can be huge)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
+}
+
+// ═══════════ AUTH ═══════════
+function openAdmin() {
+  document.getElementById('loginOverlay').classList.add('open');
+  document.getElementById('pwInput').value = '';
+  document.getElementById('loginErr').style.display = 'none';
+  setTimeout(() => document.getElementById('pwInput').focus(), 100);
+}
+function closeLogin() {
+  document.getElementById('loginOverlay').classList.remove('open');
+}
+function checkPw() {
+  const val = document.getElementById('pwInput').value;
+  if (val === ADMIN_PW) {
+    closeLogin();
+    openAdminPanel();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+function openAdminPanel() {
+  document.getElementById('adminOverlay').classList.add('open');
+  renderAdminList();
+}
+function closeAdmin() {
+  document.getElementById('adminOverlay').classList.remove('open');
+}
+
+// ═══════════ SOURCE TABS ═══════════
+function switchSource(src, el) {
+  activeSource = src;
+  document.querySelectorAll('.source-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.source-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('src-' + src).classList.add('active');
+}
+
+// ═══════════ FILE HANDLING ═══════════
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  processFile(file);
+}
+function handleDrop(e) {
+  e.preventDefault();
+  e.currentTarget.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('video/')) processFile(file);
+}
+function processFile(file) {
+  pendingFileName = file.name;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    pendingFileData = e.target.result; // base64 data URL
+    document.getElementById('fileInfo').innerHTML =
+      `✅ <strong style="color:var(--text)">${file.name}</strong> — ${formatBytes(file.size)}`;
+  };
+  reader.readAsDataURL(file);
+}
+function formatBytes(b) {
+  if (b < 1024*1024) return (b/1024).toFixed(1) + ' KB';
+  return (b/(1024*1024)).toFixed(1) + ' MB';
+}
+
+// ═══════════ ADD MOVIE ═══════════
+function addMovie() {
+  const title = document.getElementById('movieTitle').value.trim();
+  const year = document.getElementById('movieYear').value.trim();
+  const genre = document.getElementById('movieGenre').value;
+  const desc = document.getElementById('movieDesc').value.trim();
+  const poster = document.getElementById('moviePoster').value.trim();
+
+  if (!title) { showToast('El título es obligatorio', 'error'); return; }
+
+  let videoSrc = null;
+  let srcType = activeSource;
+
+  if (activeSource === 'file') {
+    if (!pendingFileData) { showToast('Selecciona un archivo de video', 'error'); return; }
+    videoSrc = pendingFileData;
+  } else if (activeSource === 'github') {
+    videoSrc = document.getElementById('githubUrl').value.trim();
+    if (!videoSrc) { showToast('Ingresa la URL de GitHub Raw', 'error'); return; }
+  } else if (activeSource === 'url') {
+    videoSrc = document.getElementById('directUrl').value.trim();
+    if (!videoSrc) { showToast('Ingresa la URL del video', 'error'); return; }
+  }
+
+  const movie = {
+    id: Date.now().toString(),
+    title,
+    year: year || '—',
+    genre,
+    desc: desc || 'Sin descripción disponible.',
+    poster: poster || '',
+    videoSrc,
+    srcType,
+    fileName: pendingFileName || '',
+    addedAt: new Date().toLocaleDateString('es-ES')
+  };
+
+  movies.unshift(movie);
+  saveMovies();
+  renderMovies();
+  renderAdminList();
+  updateStats();
+  resetForm();
+  showToast(`"${title}" publicada con éxito 🎬`, 'success');
+}
+
+function resetForm() {
+  document.getElementById('movieTitle').value = '';
+  document.getElementById('movieYear').value = '';
+  document.getElementById('movieDesc').value = '';
+  document.getElementById('moviePoster').value = '';
+  document.getElementById('githubUrl').value = '';
+  document.getElementById('directUrl').value = '';
+  document.getElementById('fileInfo').innerHTML = '';
+  document.getElementById('fileInput').value = '';
+  pendingFileData = null;
+  pendingFileName = '';
+}
+
+function deleteMovie(id) {
+  if (!confirm('¿Eliminar esta película?')) return;
+  movies = movies.filter(m => m.id !== id);
+  saveMovies();
+  renderMovies();
+  renderAdminList();
+  updateStats();
+  showToast('Película eliminada', 'error');
+}
+
+// ═══════════ FILTER / SEARCH ═══════════
+function setFilter(genre, el) {
+  currentFilter = genre;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderMovies();
+}
+function filterMovies() { renderMovies(); }
+
+function getFilteredMovies() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  return movies.filter(m => {
+    const genreMatch = currentFilter === 'Todos' || m.genre === currentFilter;
+    const searchMatch = !q || m.title.toLowerCase().includes(q) || m.genre.toLowerCase().includes(q);
+    return genreMatch && searchMatch;
+  });
+}
+
+// ═══════════ RENDER ═══════════
+function renderMovies() {
+  const grid = document.getElementById('moviesGrid');
+  const filtered = getFilteredMovies();
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="big">🎬</div>
+      <h3>${movies.length === 0 ? 'Aún no hay películas' : 'Sin resultados'}</h3>
+      <p>${movies.length === 0 ? 'El administrador todavía no ha subido contenido.<br>¡Vuelve pronto!' : 'Intenta con otro filtro o búsqueda.'}</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(m => {
+    const badge = m.srcType === 'file' ? 'type-file' : m.srcType === 'github' ? 'type-github' : 'type-url';
+    const badgeLabel = m.srcType === 'file' ? '📂 Local' : m.srcType === 'github' ? '🐙 GitHub' : '🔗 URL';
+    const thumb = m.poster
+      ? `<img src="${m.poster}" alt="${m.title}" onerror="this.parentElement.innerHTML='<div class=\\"card-thumb-placeholder\\"><div class=\\"movie-icon\\">🎬</div><div class=\\"movie-letter\\">${m.title[0]?.toUpperCase()}</div></div>'">`
+      : `<div class="card-thumb-placeholder"><div class="movie-icon">🎬</div><div class="movie-letter">${m.title[0]?.toUpperCase() || '?'}</div></div>`;
+    return `
+      <div class="movie-card" onclick="playMovie('${m.id}')">
+        <div class="card-thumb">
+          ${thumb}
+          <div class="card-play-overlay"><div class="play-btn-big">▶</div></div>
+          <div class="card-badge">${m.genre}</div>
+        </div>
+        <div class="card-info">
+          <div class="card-title" title="${m.title}">${m.title}</div>
+          <div class="card-meta">
+            <span class="card-year">${m.year}</span>
+            <span class="card-type-badge ${badge}">${badgeLabel}</span>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderAdminList() {
+  const list = document.getElementById('adminMovieList');
+  document.getElementById('adminListTitle').textContent = `🎬 Películas Publicadas (${movies.length})`;
+  if (movies.length === 0) {
+    list.innerHTML = '<p style="color:var(--muted); font-size:0.82rem; text-align:center; padding:20px;">Aún no hay películas.</p>';
+    return;
+  }
+  list.innerHTML = movies.map(m => {
+    const thumb = m.poster
+      ? `<img src="${m.poster}" alt="" onerror="this.textContent='🎬'">`
+      : '🎬';
+    const srcLabel = m.srcType === 'file' ? '📂 Archivo local' : m.srcType === 'github' ? '🐙 GitHub Raw' : '🔗 URL directa';
+    return `
+      <div class="movie-item-admin">
+        <div class="movie-thumb-sm">${thumb}</div>
+        <div class="movie-item-info">
+          <div class="movie-item-title">${m.title}</div>
+          <div class="movie-item-meta">${m.genre} • ${m.year} • ${srcLabel} • ${m.addedAt}</div>
+        </div>
+        <button class="movie-item-del" onclick="deleteMovie('${m.id}')">Eliminar</button>
+      </div>`;
+  }).join('');
+}
+
+function updateStats() {
+  document.getElementById('totalMovies').textContent = movies.length;
+}
+
+// ═══════════ PLAYER ═══════════
+function playMovie(id) {
+  const m = movies.find(x => x.id === id);
+  if (!m) return;
+
+  document.getElementById('playerTitle').textContent = m.title;
+  document.getElementById('playerMeta').innerHTML = `
+    <span>📅 ${m.year}</span>
+    <span>🎭 ${m.genre}</span>
+    ${m.srcType === 'file' ? '<span style="color:var(--gold)">📂 Archivo local</span>' : ''}
+    ${m.srcType === 'github' ? '<span style="color:#58a6ff">🐙 GitHub Raw</span>' : ''}
+    ${m.srcType === 'url' ? '<span style="color:#3fb950">🔗 URL directa</span>' : ''}
+  `;
+  document.getElementById('playerDesc').textContent = m.desc;
+
+  const container = document.getElementById('videoContainer');
+  if (m.videoSrc) {
+    container.innerHTML = `
+      <video controls autoplay style="width:100%;height:100%;background:#000" controlsList="nodownload">
+        <source src="${m.videoSrc}" type="video/mp4">
+        <source src="${m.videoSrc}" type="video/webm">
+        Tu navegador no soporta reproducción de video.
+      </video>`;
+  } else {
+    container.innerHTML = `
+      <div class="video-no-source">
+        <div class="big-icon">⚠️</div>
+        <p>No hay fuente de video disponible para esta película.</p>
+      </div>`;
+  }
+
+  document.getElementById('playerOverlay').classList.add('open');
+}
+
+function closePlayer() {
+  document.getElementById('playerOverlay').classList.remove('open');
+  document.getElementById('videoContainer').innerHTML = '';
+}
+
+// ═══════════ TOAST ═══════════
+function showToast(msg, type = 'success') {
+  const toast = document.getElementById('toast');
+  const icons = { success: '✅', error: '❌' };
+  document.getElementById('toastIcon').textContent = icons[type] || '💬';
+  document.getElementById('toastMsg').textContent = msg;
+  toast.className = `toast ${type} show`;
+  setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ═══════════ KEYBOARD / OUTSIDE CLICK ═══════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closePlayer();
+    closeAdmin();
+    closeLogin();
+  }
+});
+
+document.getElementById('playerOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closePlayer();
+});
+document.getElementById('adminOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdmin();
+});
+document.getElementById('loginOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeLogin();
+});
+
+// ═══════════ START ═══════════
+init();
+</script>
+</body>
+</html>
